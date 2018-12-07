@@ -54,7 +54,9 @@ var ValidateCommand = cli.Command{
 			return cli.NewExitError("", 1)
 		}
 
-		UI.DisplaySuccess("validation succeeded")
+		UI.DisplayText("validation succeeded\n")
+		UI.DisplayNewline()
+		UI.DisplaySuccess()
 
 		return nil
 	},

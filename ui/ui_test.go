@@ -28,8 +28,8 @@ var _ = Describe("UI", func() {
 
 	Describe("DisplaySuccess", func() {
 		It("prints SUCCESS to the out buffer", func() {
-			testUI.DisplaySuccess("Good job")
-			Expect(testUI.Out).To(Say("Good job"))
+			testUI.DisplaySuccess()
+			Expect(testUI.Out).To(Say("SUCCESS"))
 		})
 	})
 

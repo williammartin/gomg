@@ -91,8 +91,12 @@ var _ = Describe("gomg validate", func() {
 				Eventually(session).Should(gexec.Exit(0))
 			})
 
-			It("displays a success message", func() {
+			It("displays a message that validation succeeded", func() {
 				Eventually(session).Should(gbytes.Say("validation succeeded"))
+			})
+
+			It("displays a success message", func() {
+				Eventually(session).Should(gbytes.Say("SUCCESS"))
 			})
 		})
 	})

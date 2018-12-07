@@ -28,9 +28,9 @@ func (ui *UI) DisplayFailed() {
 	style.Fprintln(ui.Err, "FAILED")
 }
 
-func (ui *UI) DisplaySuccess(text string) {
+func (ui *UI) DisplaySuccess() {
 	style := color.New(color.FgGreen, color.Bold)
-	style.Fprintln(ui.Out, text)
+	style.Fprintln(ui.Out, "SUCCESS")
 }
 
 func (ui *UI) DisplayNewline() {
