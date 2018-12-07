@@ -49,6 +49,7 @@ var ValidateCommand = cli.Command{
 			for _, e := range result.Errors {
 				fmt.Fprintf(os.Stderr, " - %s\n", e)
 			}
+			UI.DisplayNewline()
 			UI.DisplayFailed()
 			return cli.NewExitError("", 1)
 		}

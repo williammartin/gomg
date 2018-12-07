@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"fmt"
 	"io"
 	"text/template"
 
@@ -30,4 +31,8 @@ func (ui *UI) DisplayFailed() {
 func (ui *UI) DisplaySuccess(text string) {
 	style := color.New(color.FgGreen, color.Bold)
 	style.Fprintln(ui.Out, text)
+}
+
+func (ui *UI) DisplayNewline() {
+	fmt.Fprintln(ui.Out)
 }

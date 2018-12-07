@@ -39,4 +39,11 @@ var _ = Describe("UI", func() {
 			Expect(testUI.Err).To(Say("FAILED"))
 		})
 	})
+
+	Describe("DisplayNewline", func() {
+		It("prints a newline to the out buffer", func() {
+			testUI.DisplayNewline()
+			Expect(testUI.Out).To(Say("\n"))
+		})
+	})
 })
