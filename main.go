@@ -49,13 +49,11 @@ var ValidateCommand = cli.Command{
 			for _, e := range result.Errors {
 				UI.DisplayError(fmt.Sprintf(" - %s", e))
 			}
-			UI.DisplayNewline()
 			UI.DisplayFailed()
 			return cli.NewExitError("", 1)
 		}
 
-		UI.DisplayText("validation succeeded\n")
-		UI.DisplayNewline()
+		UI.DisplayText("validation succeeded")
 		UI.DisplaySuccess()
 
 		return nil

@@ -19,7 +19,7 @@ func (ui *UI) DisplayText(text string, data ...map[string]interface{}) {
 		keys = data[0]
 	}
 
-	formattedTemplate := template.Must(template.New("Display Text").Parse(text))
+	formattedTemplate := template.Must(template.New("Display Text").Parse(text + "\n"))
 	formattedTemplate.Execute(ui.Out, keys)
 }
 

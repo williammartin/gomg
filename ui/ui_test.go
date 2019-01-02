@@ -22,7 +22,7 @@ var _ = Describe("UI", func() {
 	Describe("DisplayText", func() {
 		It("prints text with templated values to the out buffer", func() {
 			testUI.DisplayText("This is a test for the {{.Struct}} struct", map[string]interface{}{"Struct": "UI"})
-			Expect(testUI.Out).To(Say("This is a test for the UI struct"))
+			Expect(testUI.Out).To(Say("This is a test for the UI struct\n"))
 		})
 	})
 
@@ -36,14 +36,14 @@ var _ = Describe("UI", func() {
 	Describe("DisplaySuccess", func() {
 		It("prints SUCCESS to the out buffer", func() {
 			testUI.DisplaySuccess()
-			Expect(testUI.Out).To(Say("SUCCESS"))
+			Expect(testUI.Out).To(Say("SUCCESS\n"))
 		})
 	})
 
 	Describe("DisplayFailed", func() {
 		It("prints FAILED to the err buffer", func() {
 			testUI.DisplayFailed()
-			Expect(testUI.Err).To(Say("FAILED"))
+			Expect(testUI.Err).To(Say("FAILED\n"))
 		})
 	})
 
