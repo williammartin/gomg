@@ -23,6 +23,10 @@ func (ui *UI) DisplayText(text string, data ...map[string]interface{}) {
 	formattedTemplate.Execute(ui.Out, keys)
 }
 
+func (ui *UI) DisplayError(text string) {
+	fmt.Fprintln(ui.Err, text)
+}
+
 func (ui *UI) DisplayFailed() {
 	style := color.New(color.FgRed, color.Bold)
 	style.Fprintln(ui.Err, "FAILED")

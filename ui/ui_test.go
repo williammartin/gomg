@@ -26,6 +26,13 @@ var _ = Describe("UI", func() {
 		})
 	})
 
+	Describe("DisplayError", func() {
+		It("prints text to the err buffer", func() {
+			testUI.DisplayError("error text")
+			Expect(testUI.Err).To(Say("error text\n"))
+		})
+	})
+
 	Describe("DisplaySuccess", func() {
 		It("prints SUCCESS to the out buffer", func() {
 			testUI.DisplaySuccess()

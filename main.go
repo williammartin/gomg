@@ -47,7 +47,7 @@ var ValidateCommand = cli.Command{
 		if !result.IsValid {
 			fmt.Fprintln(os.Stderr, "validation errors occurred:")
 			for _, e := range result.Errors {
-				fmt.Fprintf(os.Stderr, " - %s\n", e)
+				UI.DisplayError(fmt.Sprintf(" - %s", e))
 			}
 			UI.DisplayNewline()
 			UI.DisplayFailed()
