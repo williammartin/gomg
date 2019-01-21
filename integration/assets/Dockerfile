@@ -1,0 +1,2 @@
+FROM scratch
+STOPSIGNAL 9

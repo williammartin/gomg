@@ -1,6 +1,9 @@
 package ui_test
 
 import (
+	"bytes"
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gbytes"
@@ -28,8 +31,16 @@ var _ = Describe("UI", func() {
 
 	Describe("DisplayError", func() {
 		It("prints text to the err buffer", func() {
-			testUI.DisplayError("error text")
+			testUI.DisplayError(errors.New("error text"))
 			Expect(testUI.Err).To(Say("error text\n"))
+		})
+	})
+
+	Describe("DisplayErrorAndFailed", func() {
+		It("prints text to the err buffer and FAILED", func() {
+			testUI.DisplayErrorAndFailed(errors.New("error text"))
+			Expect(testUI.Err).To(Say("error text\n"))
+			Expect(testUI.Err).To(Say("FAILED\n"))
 		})
 	})
 
@@ -51,6 +62,15 @@ var _ = Describe("UI", func() {
 		It("prints a newline to the out buffer", func() {
 			testUI.DisplayNewline()
 			Expect(testUI.Out).To(Say("\n"))
+		})
+	})
+
+	Describe("DisplayStream", func() {
+		It("copies from the reader to the out buffer", func() {
+			output := bytes.NewBuffer([]byte("test-output"))
+			testUI.DisplayStream(output)
+
+			Expect(testUI.Out).To(Say("test-output"))
 		})
 	})
 })

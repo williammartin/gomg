@@ -23,8 +23,13 @@ func (ui *UI) DisplayText(text string, data ...map[string]interface{}) {
 	formattedTemplate.Execute(ui.Out, keys)
 }
 
-func (ui *UI) DisplayError(text string) {
-	fmt.Fprintln(ui.Err, text)
+func (ui *UI) DisplayError(err error) {
+	fmt.Fprintln(ui.Err, err.Error())
+}
+
+func (ui *UI) DisplayErrorAndFailed(err error) {
+	fmt.Fprintln(ui.Err, err.Error())
+	ui.DisplayFailed()
 }
 
 func (ui *UI) DisplayFailed() {
@@ -39,4 +44,8 @@ func (ui *UI) DisplaySuccess() {
 
 func (ui *UI) DisplayNewline() {
 	fmt.Fprintln(ui.Out)
+}
+
+func (ui *UI) DisplayStream(reader io.Reader) (int64, error) {
+	return io.Copy(ui.Out, reader)
 }
