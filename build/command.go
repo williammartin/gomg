@@ -8,8 +8,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/codegangsta/cli"
 	docker "github.com/fsouza/go-dockerclient"
+	"github.com/urfave/cli"
 	"github.com/williammartin/gomg/containers"
 	"github.com/williammartin/gomg/ui"
 	"github.com/williammartin/gomg/validator"

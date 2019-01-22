@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/williammartin/gomg/ui"
 	"github.com/williammartin/gomg/validator"
 	"github.com/williammartin/omg"
