@@ -12,5 +12,5 @@ type Healthcheck struct {
 	Retries int `json:"retries,omitempty"`
 
 	// Command specifies the command to execute to check the health of the microservice.
-	Command interface{} `json:"command,omitempty"`
+	Command []string `json:"command,omitempty"`
 }

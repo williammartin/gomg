@@ -10,12 +10,12 @@ type Lifecycle struct {
 
 type Startup struct {
 	// Command is the startup command that should be executed. It must be a string or array of strings.
-	Command interface{} `json:"command,omitempty"`
+	Command []string `json:"command,omitempty"`
 }
 
 type Shutdown struct {
 	// Command is the shutdown command that should be executed. It must be a string or array of strings.
-	Command interface{} `json:"command,omitempty"`
+	Command []string `json:"command,omitempty"`
 
 	// Timeout is the time allowed to gracefully shutdown.
 	Timeout int `json:"timeout,omitempty"`
