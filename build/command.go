@@ -41,10 +41,7 @@ var Command = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 
-		validator := &validator.Validator{
-			MicroserviceSchema: "file:///Users/wmartin/go/src/github.com/williammartin/omg/schemas/microservice.json",
-		}
-
+		validator := &validator.Validator{}
 		result, err := validator.Validate(&microservice)
 		if err != nil {
 			UI.DisplayErrorAndFailed(err)

@@ -19,9 +19,7 @@ var _ = Describe("Validator", func() {
 	)
 
 	BeforeEach(func() {
-		validator = &Validator{
-			MicroserviceSchema: "file:///Users/wmartin/go/src/github.com/williammartin/omg/schemas/microservice.json",
-		}
+		validator = &Validator{}
 	})
 
 	JustBeforeEach(func() {
@@ -61,18 +59,6 @@ var _ = Describe("Validator", func() {
 
 		It("returns validation errors", func() {
 			Expect(len(result.Errors)).NotTo(BeZero())
-		})
-	})
-
-	When("given a bad schema", func() {
-		BeforeEach(func() {
-			validator = &Validator{
-				MicroserviceSchema: "",
-			}
-		})
-
-		It("returns an error", func() {
-			Expect(err).To(HaveOccurred())
 		})
 	})
 })
