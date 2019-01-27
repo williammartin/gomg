@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/williammartin/gomg.svg?branch=master)](https://travis-ci.com/williammartin/gomg)
+
 # gomg
 
 `gomg` provides a set of utilities for interacting with the [Open Microservice Guide](https://microservice.guide).
