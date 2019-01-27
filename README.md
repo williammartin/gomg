@@ -18,6 +18,32 @@ and after that you can explore the `gomg` CLI using:
 gomg --help
 ```
 
+### Validating your microservice
+
+You can validate your microservice against the `OMG` by navigating to the directory containing your `microservice.yml` and running:
+
+```
+gomg validate
+```
+
+### Building your microservice
+
+You can build a docker image for your microservice by navigating to the directory containing your `microservice.yml` and `Dockerfile` and running:
+
+```
+gomg build
+```
+
+You can then run:
+
+```
+docker images
+```
+
+and see your microservice tagged in the format `omg-<MICROSERVICE>:latest`
+
+**Note**: You will need a local Docker daemon running for this workflow to succeed.
+
 ## Running the tests
 
 You can use the provided makefile to run tests:
