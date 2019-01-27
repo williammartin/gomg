@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/williammartin/gomg.svg?branch=master)](https://travis-ci.com/williammartin/gomg)
+[![Build Status](https://travis-ci.com/williammartin/gomg.svg?branch=master)](https://travis-ci.com/williammartin/gomg) [![codecov](https://codecov.io/gh/williammartin/gomg/branch/master/graph/badge.svg)](https://codecov.io/gh/williammartin/gomg)
 
 # gomg
 

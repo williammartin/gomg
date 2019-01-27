@@ -9,4 +9,8 @@ install:
   - go get github.com/onsi/ginkgo
   - go install github.com/onsi/ginkgo/ginkgo
 
-script: make test
+script:
+ - make coverage
+
+after_success:
+ - bash <(curl -s https://codecov.io/bash)
