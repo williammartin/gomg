@@ -1,9 +1,7 @@
 package containers
 
 import (
-	"fmt"
 	"io"
-	"path/filepath"
 
 	docker "github.com/fsouza/go-dockerclient"
 )
@@ -12,12 +10,40 @@ type DockerClient struct {
 	DockerClient *docker.Client
 }
 
-func (c *DockerClient) Build(name, tag, dockerfile string, writer io.Writer) error {
-	opts := docker.BuildImageOptions{
-		Name:         fmt.Sprintf("%s:%s", name, tag),
-		OutputStream: writer,
-		ContextDir:   filepath.Dir(dockerfile),
+type BuildOptions struct {
+	Name         string
+	ContextDir   string
+	OutputStream io.Writer
+}
+
+type BuildOpt func(buildOpts *BuildOptions)
+
+func WithContextDir(dirPath string) BuildOpt {
+	return func(buildOpts *BuildOptions) {
+		buildOpts.ContextDir = dirPath
+	}
+}
+
+func WithOutputStream(writer io.Writer) BuildOpt {
+	return func(buildOpts *BuildOptions) {
+		buildOpts.OutputStream = writer
+	}
+}
+
+func (c *DockerClient) Build(name string, opts ...BuildOpt) error {
+	buildOpts := &BuildOptions{Name: name}
+	for _, o := range opts {
+		o(buildOpts)
 	}
 
-	return c.DockerClient.BuildImage(opts)
+	dockerBuildOpts := convertToDockerBuildOpts(buildOpts)
+	return c.DockerClient.BuildImage(dockerBuildOpts)
+}
+
+func convertToDockerBuildOpts(buildOpts *BuildOptions) docker.BuildImageOptions {
+	return docker.BuildImageOptions{
+		Name:         buildOpts.Name,
+		ContextDir:   buildOpts.ContextDir,
+		OutputStream: buildOpts.OutputStream,
+	}
 }

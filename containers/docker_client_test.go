@@ -38,9 +38,9 @@ var _ = Describe("Docker Client", func() {
 			var (
 				tempDir string
 
-				name       string
+				repository string
 				tag        string
-				dockerfile string
+				name       string
 			)
 
 			BeforeEach(func() {
@@ -48,15 +48,16 @@ var _ = Describe("Docker Client", func() {
 				tempDir, err = ioutil.TempDir("", "")
 				Expect(err).NotTo(HaveOccurred())
 
-				dockerfile = filepath.Join(tempDir, "Dockerfile")
+				dockerfile := filepath.Join(tempDir, "Dockerfile")
 				ioutil.WriteFile(dockerfile, []byte("FROM scratch\nSTOPSIGNAL 9"), 0600)
 
-				name = prefixedRandomName("img")
+				repository = prefixedRandomName("img")
 				tag = prefixedRandomName("tag")
+				name = fmt.Sprintf("%s:%s", repository, tag)
 			})
 
 			AfterEach(func() {
-				cmd := exec.Command("docker", "rmi", fmt.Sprintf("%s:%s", name, tag))
+				cmd := exec.Command("docker", "rmi", name)
 				cmd.Stdout = GinkgoWriter
 				cmd.Stderr = GinkgoWriter
 				Expect(cmd.Run()).To(Succeed())
@@ -64,23 +65,23 @@ var _ = Describe("Docker Client", func() {
 				Expect(os.RemoveAll(tempDir)).To(Succeed())
 			})
 
-			It("builds an image with the given name and tag", func() {
-				err := client.Build(name, tag, dockerfile, ioutil.Discard)
+			It("builds an image with the given name", func() {
+				err := client.Build(name, WithContextDir(tempDir), WithOutputStream(ioutil.Discard))
 				Expect(err).NotTo(HaveOccurred())
 
 				stdout := gbytes.NewBuffer()
-				cmd := exec.Command("docker", "images", fmt.Sprintf("%s:%s", name, tag))
+				cmd := exec.Command("docker", "images", repository)
 				cmd.Stdout = io.MultiWriter(GinkgoWriter, stdout)
 				cmd.Stderr = GinkgoWriter
 				Expect(cmd.Run()).To(Succeed())
 
-				Expect(stdout).To(gbytes.Say(name))
+				Expect(stdout).To(gbytes.Say(repository))
 				Expect(stdout).To(gbytes.Say(tag))
 			})
 
 			It("forwards output to the provided writer", func() {
 				output := gbytes.NewBuffer()
-				err := client.Build(name, tag, dockerfile, output)
+				err := client.Build(name, WithContextDir(tempDir), WithOutputStream(output))
 				Expect(err).NotTo(HaveOccurred())
 				Expect(output).To(gbytes.Say(`.*`))
 			})
@@ -88,7 +89,7 @@ var _ = Describe("Docker Client", func() {
 
 		When("building the image fails", func() {
 			It("returns an error", func() {
-				Expect(client.Build("!invalid-name!", "a-tag", "a-dockerfile", ioutil.Discard)).NotTo(Succeed())
+				Expect(client.Build("!invalid-name!")).NotTo(Succeed())
 			})
 		})
 	})

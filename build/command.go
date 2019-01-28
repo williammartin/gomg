@@ -72,18 +72,20 @@ var Command = cli.Command{
 		client := &containers.DockerClient{
 			DockerClient: dockerClient,
 		}
-		name := fmt.Sprintf("omg-%s", convertTitleToImageName(microservice.Info.Title))
+
 		r, w := io.Pipe()
 		go func(reader io.Reader) {
 			UI.DisplayStream(reader)
 		}(r)
 
-		err = client.Build(name, "latest", "Dockerfile", w)
+		repository := fmt.Sprintf("omg-%s", convertTitleToImageName(microservice.Info.Title))
+		name := fmt.Sprintf("%s:%s", repository, "latest")
+		err = client.Build(name, containers.WithContextDir("."), containers.WithOutputStream(w))
 		if err != nil {
 			return cli.NewExitError(err, 1)
 		}
 
-		UI.DisplayText("built {{.Name}} with tag latest", map[string]interface{}{"Name": name})
+		UI.DisplayText("built {{.Repository}} with tag latest", map[string]interface{}{"Repository": repository})
 		UI.DisplaySuccess()
 
 		return nil
