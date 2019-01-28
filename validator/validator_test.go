@@ -75,5 +75,13 @@ func generateValidMicroservice() *omg.Microservice {
 				URL:  "https://opensource.org/licenses/MIT",
 			},
 		},
+		Lifecycle: &omg.Lifecycle{
+			Startup: &omg.Startup{
+				Command: []string{"a", "command"},
+			},
+		},
+		Actions: omg.Actions{
+			"myaction": &omg.Action{},
+		},
 	}
 }

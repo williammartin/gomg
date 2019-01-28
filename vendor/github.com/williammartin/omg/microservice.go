@@ -9,10 +9,10 @@ type Microservice struct {
 	Info *Info `json:"info,omitempty" jsonschema:"required"`
 
 	// Lifecycle specifies the lifecycle of the microservice.
-	Lifecycle *Lifecycle `json:"lifecycle,omitempty"`
+	Lifecycle *Lifecycle `json:"lifecycle,omitempty" jsonschema:"required"`
 
 	// Actions specifies how to interact with the microservice.
-	Actions Actions `json:"actions,omitempty"`
+	Actions Actions `json:"actions,omitempty" jsonschema:"required"`
 
 	// Environment specifies environment variables that should be exposed to the microservice.
 	Environment Environment `json:"environment,omitempty"`

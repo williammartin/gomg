@@ -275,11 +275,11 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:3d02d7a6b98720e1355678d64963668549a3397b54612da90b4c7748d32870db"
+  digest = "1:fdd9d00ab976563399cd2415ffd0d80622dd59f6bd6a3e03696df01a315386c5"
   name = "github.com/williammartin/omg"
   packages = ["."]
   pruneopts = "UT"
-  revision = "115be47cd1db28c7c94edd3ec3c5b2181a572764"
+  revision = "b3545187074efe157b714c4b582ab893c48d6b70"
 
 [[projects]]
   branch = "master"
