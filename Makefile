@@ -2,9 +2,12 @@ vet:
 	go vet
 
 test: vet
-	ginkgo -p -r --randomizeAllSpecs --failOnPending --randomizeSuites --race
+	./scripts/test.sh
 
 coverage: vet
-	ginkgo -p -r --randomizeAllSpecs --failOnPending --randomizeSuites --race -cover -coverprofile=coverage.txt -outputdir=.
+	./scripts/generate-coverage.sh
+
+release: test
+	./scripts/release.sh
 
 .PHONY: test
