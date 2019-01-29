@@ -53,6 +53,10 @@ var _ = Describe("gomg validate", func() {
 		It("displays an informative error", func() {
 			Eventually(session.Err).Should(gbytes.Say("the current directory must contain a 'microservice.yml' file"))
 		})
+
+		It("displays FAILED", func() {
+			Eventually(session.Err).Should(gbytes.Say("FAILED"))
+		})
 	})
 
 	When("the current directory contains a microservice.yml", func() {

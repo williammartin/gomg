@@ -1,7 +1,7 @@
 package validate
 
 import (
-	"fmt"
+	"errors"
 	"io/ioutil"
 	"os"
 
@@ -22,44 +22,51 @@ var Command = cli.Command{
 			Err: os.Stderr,
 		}
 
-		if _, err := os.Stat("microservice.yml"); os.IsNotExist(err) {
-			return cli.NewExitError("the current directory must contain a 'microservice.yml' file", 1)
+		microservice, err := loadMicroservice()
+		if err != nil {
+			return err
 		}
 
-		bytes, err := ioutil.ReadFile("microservice.yml")
+		result, err := validateMicroservice(microservice)
 		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
-
-		var microservice omg.Microservice
-		err = yaml.Unmarshal(bytes, &microservice)
-		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
-
-		reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
-		schemaGenerator := &generator.SchemaGenerator{Reflector: reflector}
-		docGenerator := &generator.DocumentGenerator{}
-		validator := &schema.Validator{}
-		actor := &Actor{SchemaGenerator: schemaGenerator, DocumentGenerator: docGenerator, SchemaValidator: validator}
-		result, err := actor.ValidateMicroservice(&microservice)
-		if err != nil {
-			UI.DisplayErrorAndFailed(err)
-			cli.NewExitError("", 1)
+			return err
 		}
 
 		if !result.IsValid {
-			fmt.Fprintln(os.Stderr, "validation errors occurred:")
-			for _, e := range result.Errors {
-				UI.DisplayError(fmt.Errorf(" - %s", e))
-			}
-			UI.DisplayFailed()
-			return cli.NewExitError("", 1)
+			return &ValidationFailedError{ValidationErrors: result.Errors}
 		}
 
 		UI.DisplayText("validation succeeded")
-		UI.DisplaySuccess()
 
 		return nil
 	},
+}
+
+func loadMicroservice() (*omg.Microservice, error) {
+	if _, err := os.Stat("microservice.yml"); os.IsNotExist(err) {
+		return nil, errors.New("the current directory must contain a 'microservice.yml' file")
+	}
+
+	bytes, err := ioutil.ReadFile("microservice.yml")
+	if err != nil {
+		return nil, err
+	}
+
+	var microservice omg.Microservice
+	err = yaml.Unmarshal(bytes, &microservice)
+	if err != nil {
+		return nil, err
+	}
+
+	return &microservice, nil
+}
+
+func validateMicroservice(microservice *omg.Microservice) (*schema.Result, error) {
+	reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
+	schemaGenerator := &generator.SchemaGenerator{Reflector: reflector}
+	docGenerator := &generator.DocumentGenerator{}
+	validator := &schema.Validator{}
+	actor := &Actor{SchemaGenerator: schemaGenerator, DocumentGenerator: docGenerator, SchemaValidator: validator}
+
+	return actor.ValidateMicroservice(microservice)
 }

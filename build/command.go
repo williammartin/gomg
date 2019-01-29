@@ -28,44 +28,22 @@ var Command = cli.Command{
 			Err: os.Stderr,
 		}
 
-		if _, err := os.Stat("microservice.yml"); os.IsNotExist(err) {
-			UI.DisplayErrorAndFailed(errors.New("the current directory must contain a 'microservice.yml' file"))
-			return cli.NewExitError("", 1)
+		microservice, err := loadMicroservice()
+		if err != nil {
+			return err
 		}
 
-		b, err := ioutil.ReadFile("microservice.yml")
+		result, err := validateMicroservice(microservice)
 		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
-
-		var microservice omg.Microservice
-		err = yaml.Unmarshal(b, &microservice)
-		if err != nil {
-			return cli.NewExitError(err, 1)
-		}
-
-		reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
-		schemaGenerator := &generator.SchemaGenerator{Reflector: reflector}
-		docGenerator := &generator.DocumentGenerator{}
-		validator := &schema.Validator{}
-		actor := &validate.Actor{SchemaGenerator: schemaGenerator, DocumentGenerator: docGenerator, SchemaValidator: validator}
-		result, err := actor.ValidateMicroservice(&microservice)
-		if err != nil {
-			UI.DisplayErrorAndFailed(err)
-			cli.NewExitError("", 1)
+			return err
 		}
 
 		if !result.IsValid {
-			fmt.Fprintln(os.Stderr, "validation errors occurred:")
-			for _, e := range result.Errors {
-				UI.DisplayError(fmt.Errorf(" - %s", e))
-			}
-			UI.DisplayFailed()
-			return cli.NewExitError("", 1)
+			return &validate.ValidationFailedError{ValidationErrors: result.Errors}
 		}
 
 		if _, err := os.Stat("Dockerfile"); os.IsNotExist(err) {
-			return cli.NewExitError("the current directory must contain a 'Dockerfile' file", 1)
+			return errors.New("the current directory must contain a 'Dockerfile' file")
 		}
 
 		UI.DisplayText("building...")
@@ -73,7 +51,7 @@ var Command = cli.Command{
 		endpoint := "unix:///var/run/docker.sock"
 		dockerClient, err := docker.NewClient(endpoint)
 		if err != nil {
-			cli.NewExitError(err, 1)
+			return err
 		}
 
 		client := &containers.DockerClient{
@@ -89,11 +67,10 @@ var Command = cli.Command{
 		name := fmt.Sprintf("%s:%s", repository, "latest")
 		err = client.Build(name, containers.WithContextDir("."), containers.WithOutputStream(w))
 		if err != nil {
-			return cli.NewExitError(err, 1)
+			return err
 		}
 
 		UI.DisplayText("built {{.Repository}} with tag latest", map[string]interface{}{"Repository": repository})
-		UI.DisplaySuccess()
 
 		return nil
 	},
@@ -101,4 +78,33 @@ var Command = cli.Command{
 
 func convertTitleToImageName(title string) string {
 	return strings.ToLower(strings.Replace(title, " ", "", -1))
+}
+
+func loadMicroservice() (*omg.Microservice, error) {
+	if _, err := os.Stat("microservice.yml"); os.IsNotExist(err) {
+		return nil, errors.New("the current directory must contain a 'microservice.yml' file")
+	}
+
+	bytes, err := ioutil.ReadFile("microservice.yml")
+	if err != nil {
+		return nil, err
+	}
+
+	var microservice omg.Microservice
+	err = yaml.Unmarshal(bytes, &microservice)
+	if err != nil {
+		return nil, err
+	}
+
+	return &microservice, nil
+}
+
+func validateMicroservice(microservice *omg.Microservice) (*schema.Result, error) {
+	reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
+	schemaGenerator := &generator.SchemaGenerator{Reflector: reflector}
+	docGenerator := &generator.DocumentGenerator{}
+	validator := &schema.Validator{}
+	actor := &validate.Actor{SchemaGenerator: schemaGenerator, DocumentGenerator: docGenerator, SchemaValidator: validator}
+
+	return actor.ValidateMicroservice(microservice)
 }

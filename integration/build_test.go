@@ -130,6 +130,10 @@ var _ = Describe("gomg build", func() {
 				It("displays an informative error", func() {
 					Eventually(session.Err).Should(gbytes.Say("the current directory must contain a 'Dockerfile' file"))
 				})
+
+				It("displays FAILED", func() {
+					Eventually(session.Err).Should(gbytes.Say("FAILED"))
+				})
 			})
 		})
 	})

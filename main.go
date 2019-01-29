@@ -5,6 +5,7 @@ import (
 
 	"github.com/urfave/cli"
 	"github.com/williammartin/gomg/build"
+	"github.com/williammartin/gomg/ui"
 	"github.com/williammartin/gomg/validate"
 )
 
@@ -16,5 +17,15 @@ func main() {
 		build.Command,
 	}
 
-	app.Run(os.Args)
+	UI := &ui.UI{
+		Out: os.Stdout,
+		Err: os.Stderr,
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		UI.DisplayErrorAndFailed(err)
+		os.Exit(1)
+	}
+
+	UI.DisplaySuccess()
 }
