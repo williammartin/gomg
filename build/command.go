@@ -11,8 +11,11 @@ import (
 	docker "github.com/fsouza/go-dockerclient"
 	"github.com/urfave/cli"
 	"github.com/williammartin/gomg/containers"
+	"github.com/williammartin/gomg/schema"
+	"github.com/williammartin/gomg/schema/generator"
 	"github.com/williammartin/gomg/ui"
-	"github.com/williammartin/gomg/validator"
+	"github.com/williammartin/gomg/validate"
+	"github.com/williammartin/jsonschema"
 	"github.com/williammartin/omg"
 	yaml "gopkg.in/yaml.v2"
 )
@@ -41,8 +44,12 @@ var Command = cli.Command{
 			return cli.NewExitError(err, 1)
 		}
 
-		validator := &validator.Validator{}
-		result, err := validator.Validate(&microservice)
+		reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
+		schemaGenerator := &generator.SchemaGenerator{Reflector: reflector}
+		docGenerator := &generator.DocumentGenerator{}
+		validator := &schema.Validator{}
+		actor := &validate.Actor{SchemaGenerator: schemaGenerator, DocumentGenerator: docGenerator, SchemaValidator: validator}
+		result, err := actor.ValidateMicroservice(&microservice)
 		if err != nil {
 			UI.DisplayErrorAndFailed(err)
 			cli.NewExitError("", 1)

@@ -1,4 +1,4 @@
-package validator_test
+package validate_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestValidator(t *testing.T) {
+func TestValidate(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Validator Suite")
+	RunSpecs(t, "Validate Suite")
 }

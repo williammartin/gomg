@@ -1,10 +1,9 @@
-package validator
+package schema
 
 import (
-	"encoding/json"
+	"io"
+	"io/ioutil"
 
-	"github.com/williammartin/jsonschema"
-	"github.com/williammartin/omg"
 	"github.com/xeipuuv/gojsonschema"
 )
 
@@ -17,16 +16,19 @@ type Result struct {
 
 type ValidationErrors []string
 
-func (v *Validator) Validate(microservice *omg.Microservice) (*Result, error) {
-	reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
-	js := reflector.Reflect(&omg.Microservice{})
-	jm, err := json.Marshal(js)
+func (v *Validator) Validate(schemaReader, documentReader io.Reader) (*Result, error) {
+	schema, err := ioutil.ReadAll(schemaReader)
 	if err != nil {
 		return nil, err
 	}
 
-	schemaLoader := gojsonschema.NewStringLoader(string(jm))
-	documentLoader := gojsonschema.NewGoLoader(microservice)
+	document, err := ioutil.ReadAll(documentReader)
+	if err != nil {
+		return nil, err
+	}
+
+	schemaLoader := gojsonschema.NewStringLoader(string(schema))
+	documentLoader := gojsonschema.NewStringLoader(string(document))
 
 	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
 	if err != nil {
