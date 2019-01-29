@@ -97,7 +97,7 @@ var _ = Describe("gomg build", func() {
 
 			When("there is a Dockerfile present", func() {
 				BeforeEach(func() {
-					copyFile("assets/Dockerfile", filepath.Join(tmpDir, "Dockerfile"))
+					copyFile("assets/microservices/scratch/Dockerfile", filepath.Join(tmpDir, "Dockerfile"))
 				})
 
 				AfterEach(func() {
@@ -138,9 +138,3 @@ var _ = Describe("gomg build", func() {
 		})
 	})
 })
-
-func copyFile(src string, dst string) {
-	data, err := ioutil.ReadFile(src)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(ioutil.WriteFile(dst, data, 0644)).To(Succeed())
-}

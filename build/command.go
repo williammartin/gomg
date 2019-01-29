@@ -33,39 +33,17 @@ var Command = cli.Command{
 			return err
 		}
 
-		result, err := validateMicroservice(microservice)
-		if err != nil {
+		if err := validateMicroservice(microservice); err != nil {
 			return err
 		}
 
-		if !result.IsValid {
-			return &validate.ValidationFailedError{ValidationErrors: result.Errors}
-		}
-
-		if _, err := os.Stat("Dockerfile"); os.IsNotExist(err) {
-			return errors.New("the current directory must contain a 'Dockerfile' file")
+		if err := ensureDockerfileExists(); err != nil {
+			return err
 		}
 
 		UI.DisplayText("building...")
 
-		endpoint := "unix:///var/run/docker.sock"
-		dockerClient, err := docker.NewClient(endpoint)
-		if err != nil {
-			return err
-		}
-
-		client := &containers.DockerClient{
-			DockerClient: dockerClient,
-		}
-
-		r, w := io.Pipe()
-		go func(reader io.Reader) {
-			UI.DisplayStream(reader)
-		}(r)
-
-		repository := fmt.Sprintf("omg-%s", convertTitleToImageName(microservice.Info.Title))
-		name := fmt.Sprintf("%s:%s", repository, "latest")
-		err = client.Build(name, containers.WithContextDir("."), containers.WithOutputStream(w))
+		repository, err := buildImage(microservice, UI)
 		if err != nil {
 			return err
 		}
@@ -99,12 +77,51 @@ func loadMicroservice() (*omg.Microservice, error) {
 	return &microservice, nil
 }
 
-func validateMicroservice(microservice *omg.Microservice) (*schema.Result, error) {
+func validateMicroservice(microservice *omg.Microservice) error {
 	reflector := &jsonschema.Reflector{AllowAdditionalProperties: false, RequiredFromJSONSchemaTags: true}
 	schemaGenerator := &generator.SchemaGenerator{Reflector: reflector}
 	docGenerator := &generator.DocumentGenerator{}
 	validator := &schema.Validator{}
 	actor := &validate.Actor{SchemaGenerator: schemaGenerator, DocumentGenerator: docGenerator, SchemaValidator: validator}
 
-	return actor.ValidateMicroservice(microservice)
+	result, err := actor.ValidateMicroservice(microservice)
+	if err != nil {
+		return err
+	}
+
+	if !result.IsValid {
+		return &validate.ValidationFailedError{ValidationErrors: result.Errors}
+	}
+
+	return nil
+}
+
+func ensureDockerfileExists() error {
+	if _, err := os.Stat("Dockerfile"); os.IsNotExist(err) {
+		return errors.New("the current directory must contain a 'Dockerfile' file")
+	}
+
+	return nil
+}
+
+func buildImage(microservice *omg.Microservice, UI *ui.UI) (string, error) {
+	endpoint := "unix:///var/run/docker.sock"
+	dockerClient, err := docker.NewClient(endpoint)
+	if err != nil {
+		return "", err
+	}
+
+	client := &containers.DockerClient{
+		DockerClient: dockerClient,
+	}
+
+	r, w := io.Pipe()
+	go func(reader io.Reader) {
+		UI.DisplayStream(reader)
+	}(r)
+
+	repository := fmt.Sprintf("omg-%s", convertTitleToImageName(microservice.Info.Title))
+	name := fmt.Sprintf("%s:%s", repository, "latest")
+
+	return repository, client.Build(name, containers.WithContextDir("."), containers.WithOutputStream(w))
 }

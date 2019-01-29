@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"io/ioutil"
 	"os/exec"
 	"testing"
 	"time"
@@ -22,7 +23,7 @@ var _ = AfterSuite(func() {
 	gexec.CleanupBuildArtifacts()
 })
 
-var execBin = func(cmd *exec.Cmd) *gexec.Session {
+func execBin(cmd *exec.Cmd) *gexec.Session {
 	session, err := gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 	return session
@@ -32,4 +33,10 @@ func TestIntegration(t *testing.T) {
 	RegisterFailHandler(Fail)
 	SetDefaultEventuallyTimeout(time.Second * 5)
 	RunSpecs(t, "BoyOhBoy Integration Suite")
+}
+
+func copyFile(src string, dst string) {
+	data, err := ioutil.ReadFile(src)
+	Expect(err).NotTo(HaveOccurred())
+	Expect(ioutil.WriteFile(dst, data, 0644)).To(Succeed())
 }
