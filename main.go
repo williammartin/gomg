@@ -11,6 +11,7 @@ import (
 
 func main() {
 	app := cli.NewApp()
+	app.Version = "0.1.0"
 	app.Name = "gomg"
 	app.Commands = []cli.Command{
 		validate.Command,
