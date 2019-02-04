@@ -5,7 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/urfave/cli"
+	"github.com/pivotal-cf/jhanda"
 	"github.com/williammartin/gomg/schema"
 	"github.com/williammartin/gomg/schema/generator"
 	"github.com/williammartin/gomg/ui"
@@ -14,32 +14,37 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-var Command = cli.Command{
-	Name: "validate",
-	Action: func(ctx *cli.Context) error {
-		UI := &ui.UI{
-			Out: os.Stdout,
-			Err: os.Stderr,
-		}
+type Command struct{}
 
-		microservice, err := loadMicroservice()
-		if err != nil {
-			return err
-		}
+func (c Command) Usage() jhanda.Usage {
+	return jhanda.Usage{
+		Description: "Validate OMG microservice",
+	}
+}
 
-		result, err := validateMicroservice(microservice)
-		if err != nil {
-			return err
-		}
+func (c Command) Execute(args []string) error {
+	UI := &ui.UI{
+		Out: os.Stdout,
+		Err: os.Stderr,
+	}
 
-		if !result.IsValid {
-			return &ValidationFailedError{ValidationErrors: result.Errors}
-		}
+	microservice, err := loadMicroservice()
+	if err != nil {
+		return err
+	}
 
-		UI.DisplayText("validation succeeded")
+	result, err := validateMicroservice(microservice)
+	if err != nil {
+		return err
+	}
 
-		return nil
-	},
+	if !result.IsValid {
+		return &ValidationFailedError{ValidationErrors: result.Errors}
+	}
+
+	UI.DisplayText("validation succeeded")
+
+	return nil
 }
 
 func loadMicroservice() (*omg.Microservice, error) {

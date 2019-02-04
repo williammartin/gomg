@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	docker "github.com/fsouza/go-dockerclient"
-	"github.com/urfave/cli"
+	"github.com/pivotal-cf/jhanda"
 	"github.com/williammartin/gomg/containers"
 	"github.com/williammartin/gomg/schema"
 	"github.com/williammartin/gomg/schema/generator"
@@ -20,38 +20,43 @@ import (
 	yaml "gopkg.in/yaml.v2"
 )
 
-var Command = cli.Command{
-	Name: "build",
-	Action: func(ctx *cli.Context) error {
-		UI := &ui.UI{
-			Out: os.Stdout,
-			Err: os.Stderr,
-		}
+type Command struct{}
 
-		microservice, err := loadMicroservice()
-		if err != nil {
-			return err
-		}
+func (c Command) Usage() jhanda.Usage {
+	return jhanda.Usage{
+		Description: "Build OMG microservice",
+	}
+}
 
-		if err := validateMicroservice(microservice); err != nil {
-			return err
-		}
+func (c Command) Execute(args []string) error {
+	UI := &ui.UI{
+		Out: os.Stdout,
+		Err: os.Stderr,
+	}
 
-		if err := ensureDockerfileExists(); err != nil {
-			return err
-		}
+	microservice, err := loadMicroservice()
+	if err != nil {
+		return err
+	}
 
-		UI.DisplayText("building...")
+	if err := validateMicroservice(microservice); err != nil {
+		return err
+	}
 
-		repository, err := buildImage(microservice, UI)
-		if err != nil {
-			return err
-		}
+	if err := ensureDockerfileExists(); err != nil {
+		return err
+	}
 
-		UI.DisplayText("built {{.Repository}} with tag latest", map[string]interface{}{"Repository": repository})
+	UI.DisplayText("building...")
 
-		return nil
-	},
+	repository, err := buildImage(microservice, UI)
+	if err != nil {
+		return err
+	}
+
+	UI.DisplayText("built {{.Repository}} with tag latest", map[string]interface{}{"Repository": repository})
+
+	return nil
 }
 
 func convertTitleToImageName(title string) string {

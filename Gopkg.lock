@@ -242,6 +242,17 @@
   revision = "96ec2177ae841256168fcf76954f7177af9446eb"
 
 [[projects]]
+  branch = "master"
+  digest = "1:a5862941b8ac0491179120d73309bac03458724c5b4883f11dec1f1050e9fdf0"
+  name = "github.com/pivotal-cf/jhanda"
+  packages = [
+    ".",
+    "internal/parser",
+  ]
+  pruneopts = "UT"
+  revision = "e6aa09a032df2c727b140f9c6fc4df15aeb2b645"
+
+[[projects]]
   digest = "1:40e195917a951a8bf867cd05de2a46aaf1806c50cf92eebf4c16f78cd196f747"
   name = "github.com/pkg/errors"
   packages = ["."]
@@ -256,14 +267,6 @@
   pruneopts = "UT"
   revision = "3e01752db0189b9157070a0e1668a620f9a85da2"
   version = "v1.0.6"
-
-[[projects]]
-  digest = "1:b24d38b282bacf9791408a080f606370efa3d364e4b5fd9ba0f7b87786d3b679"
-  name = "github.com/urfave/cli"
-  packages = ["."]
-  pruneopts = "UT"
-  revision = "cfb38830724cc34fedffe9a2a29fb54fa9169cd1"
-  version = "v1.20.0"
 
 [[projects]]
   digest = "1:ccf35bcd548262b09155c1122694be58099f4c2345783f6eb2963984f5108ee3"
@@ -397,7 +400,7 @@
     "github.com/onsi/gomega",
     "github.com/onsi/gomega/gbytes",
     "github.com/onsi/gomega/gexec",
-    "github.com/urfave/cli",
+    "github.com/pivotal-cf/jhanda",
     "github.com/williammartin/jsonschema",
     "github.com/williammartin/omg",
     "github.com/xeipuuv/gojsonschema",
